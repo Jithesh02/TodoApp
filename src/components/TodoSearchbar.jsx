@@ -1,23 +1,30 @@
 import React, { useState } from 'react'
 import './TodoSearchBar.css'
-const TodoSearchbar = ({settodoList, todolist}) => {
+import axios from 'axios'
+const TodoSearchbar = ({settodoList, todolist,fetchTodos}) => {
 
     const [searchBar,setSearchBar] = useState('')
 
     const handleInputChange = (e)=> {
         setSearchBar(e.target.value)
     }
-    const onSubmit = (e)=>{
+    const onSubmit = async (e)=>{
             e.preventDefault();
             if (searchBar.trim() === '') return;
             const newTask = {
-                id: Date.now(),
-                task: searchBar,
-                status: false,
+                title: searchBar,
+                completed: false,
             }
-            settodoList([...todolist,newTask])
+            
+            try{
+                const response = await axios.post('http://localhost:8080/api/todos',newTask)
+                console.log('task added succesfully',response);
+                fetchTodos();
+            } catch(error){
+                console.log('Post Failed',error)
+            }
+            
             setSearchBar('');
-            console.log(todolist);
     }
     
   return (
